@@ -15,6 +15,7 @@ import {
   FaEdit,
   FaShoppingCart,
 } from "react-icons/fa";
+import PaymentModal from "./Payment";
 
 const openDB = () => {
   return new Promise((resolve, reject) => {
@@ -80,8 +81,7 @@ const productsData = [
     name: "Conjunto de 3 pulseras ✝⚾",
     price: 70,
     rating: 4.8,
-    image:
-      "/img1.jpg",
+    image: "/img1.jpg",
     category: "energia",
     featured: true,
     description:
@@ -98,8 +98,7 @@ const productsData = [
     name: "Conjunto de pulseras estaciones 💗",
     price: 45,
     rating: 4.6,
-    image:
-      "/img2.jpg",
+    image: "/img2.jpg",
     category: "cuarzo",
     featured: false,
     description:
@@ -116,8 +115,7 @@ const productsData = [
     name: "Conjunto de pulseras de dos pulseras chakras ✨s",
     price: 40,
     rating: 4.9,
-    image:
-      "/img3.jpg",
+    image: "/img3.jpg",
     category: "energia",
     featured: true,
     description:
@@ -134,8 +132,7 @@ const productsData = [
     name: "Conjunto de pulseras minimalistas de amarre sencillo 🎁",
     price: 35,
     rating: 4.5,
-    image:
-      "/img4.jpg",
+    image: "/img4.jpg",
     category: "minimalista",
     featured: false,
     description:
@@ -163,6 +160,17 @@ export default function HomePage({ onLogout }) {
   const [showFavorites, setShowFavorites] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showAccountModal, setShowAccountModal] = useState(false);
+  // Y en tu componente HomePage, agregas estos estados y funciones:
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  // Función para abrir el modal de pago
+  const openPaymentModal = () => {
+    if (cart.length === 0) {
+      alert("Tu carrito está vacío");
+      return;
+    }
+    setShowPaymentModal(true);
+  };
 
   // Categorías disponibles
   const categories = [
@@ -749,7 +757,13 @@ export default function HomePage({ onLogout }) {
                     ${getCartTotal()}
                   </span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+                <button
+                  className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+                  onClick={() => {
+                    setShowCartModal(false);
+                    openPaymentModal();
+                  }}
+                >
                   Proceder al Pago
                 </button>
               </div>
@@ -900,7 +914,6 @@ export default function HomePage({ onLogout }) {
                     Acciones de Cuenta
                   </h3>
                   <div className="space-y-3">
-
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 p-4 bg-red-500/20 rounded-2xl border border-red-500/30 hover:border-red-400/50 transition-all duration-300 text-left"
@@ -1080,6 +1093,14 @@ export default function HomePage({ onLogout }) {
           </div>
         </div>
       </nav>
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        cart={cart}
+        total={getCartTotal()}
+        currentUser={currentUser}
+      />
 
       {/* Animaciones CSS */}
       <style>

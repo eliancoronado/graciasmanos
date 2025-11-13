@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import HomePage from './Home';
 import AuthPage from './Register';
 import { FaGem, FaUser } from 'react-icons/fa6';
+import { FormspreeProvider } from '@formspree/react';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -54,7 +55,7 @@ function App() {
   if (!isAuthenticated) {
     // Mostrar la app principal pero con acceso limitado
     return (
-      <div>
+      <FormspreeProvider project="xgvrvarw">
         <HomePage />
         {/* Overlay para requerir login */}
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -82,7 +83,7 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
+      </FormspreeProvider>
     );
   }
 
