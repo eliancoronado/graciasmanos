@@ -77,164 +77,75 @@ const getUserById = async (id) => {
 const productsData = [
   {
     id: 1,
-    name: "Pulsera Aurora",
-    price: 12.99,
+    name: "Conjunto de 3 pulseras ✝⚾",
+    price: 70,
     rating: 4.8,
     image:
-      "https://images.unsplash.com/photo-1599643478518-a784e5b6b1de?auto=format&fit=crop&w=600&q=80",
+      "/img1.jpg",
     category: "energia",
     featured: true,
     description:
-      "Pulsera energética con cristales de cuarzo que capturan la esencia de la aurora boreal. Perfecta para momentos de meditación y conexión espiritual.",
+      "Conjunto de 3 pulseras (2 de beisbolista), una de religion y una totalmente gratis",
     details: [
       "Material: Cuarzo natural",
       "Longitud: 18cm",
-      "Cierre: Dorado",
-      "Incluye: Estuche de regalo",
+      "Cierre: Normal",
+      "Incluye: Una de regalo",
     ],
   },
   {
     id: 2,
-    name: "Pulsera de Cuarzo Rosa",
-    price: 10.49,
+    name: "Conjunto de pulseras estaciones 💗",
+    price: 45,
     rating: 4.6,
     image:
-      "https://images.unsplash.com/photo-1612207421804-9e999a2e2b0a?auto=format&fit=crop&w=600&q=80",
+      "/img2.jpg",
     category: "cuarzo",
     featured: false,
     description:
-      "Elegante pulsera de cuarzo rosa que promueve el amor propio y las relaciones armoniosas. Ideal para regalar o autoregalarse.",
+      "Elegante pulseras de estaciones del tiempo rosa que promueve el amor propio y las relaciones armoniosas. Ideal para regalar o autoregalarse.",
     details: [
-      "Material: Cuarzo rosa",
+      "Material: Perlas rosa, verde y blanca",
       "Longitud: 19cm",
       "Cierre: Plateado",
-      "Incluye: Tarjeta energética",
+      "Incluye: -",
     ],
   },
   {
     id: 3,
-    name: "Pulsera Energía Natural",
-    price: 15.99,
+    name: "Conjunto de pulseras de dos pulseras chakras ✨s",
+    price: 40,
     rating: 4.9,
     image:
-      "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?auto=format&fit=crop&w=600&q=80",
+      "/img3.jpg",
     category: "energia",
     featured: true,
     description:
-      "Combinación única de piedras naturales que equilibran tus chakras y atraen energía positiva a tu vida diaria.",
+      "Combinación única de pulseras de chakras que equilibran y armonizan tu energía. Perfectas para meditación y bienestar diario.",
     details: [
-      "Material: Piedras naturales",
+      "Material: De amarre sencillo",
       "Longitud: 20cm",
       "Cierre: Ajustable",
-      "Incluye: Guía de piedras",
+      "Incluye: Una extra de regalo",
     ],
   },
   {
     id: 4,
-    name: "Pulsera Minimalista Negra",
-    price: 9.99,
+    name: "Conjunto de pulseras minimalistas de amarre sencillo 🎁",
+    price: 35,
     rating: 4.5,
     image:
-      "https://images.unsplash.com/photo-1600180758600-22804b3dbcd0?auto=format&fit=crop&w=600&q=80",
+      "/img4.jpg",
     category: "minimalista",
     featured: false,
     description:
-      "Diseño minimalista en color negro para el día a día. Elegancia discreta que complementa cualquier outfit.",
+      "Diseño minimalista y elegante que complementa cualquier estilo. Perfectas para el uso diario o para ocasiones especiales.",
     details: [
-      "Material: Acero inoxidable",
+      "Material: De amarre sencillo",
       "Longitud: 17cm",
-      "Cierre: Magnético",
-      "Resistente al agua",
-    ],
-  },
-  {
-    id: 5,
-    name: "Pulsera de Amatista",
-    price: 13.99,
-    rating: 4.7,
-    image:
-      "https://images.unsplash.com/photo-1621263764111-ec5b3df8b2f3?auto=format&fit=crop&w=600&q=80",
-    category: "piedras",
-    featured: true,
-    description:
-      "Amatista pura que ayuda a calmar la mente y promover un sueño reparador. Piedra de la sabiduría y la paz interior.",
-    details: [
-      "Material: Amatista natural",
-      "Longitud: 18cm",
-      "Cierre: Dorado",
-      "Incluye: Certificado autenticidad",
-    ],
-  },
-  {
-    id: 6,
-    name: "Pulsera Dorada de Lujo",
-    price: 19.99,
-    rating: 5.0,
-    image:
-      "https://images.unsplash.com/photo-1621263764282-4db8338c9a31?auto=format&fit=crop&w=600&q=80",
-    category: "lujo",
-    featured: false,
-    description:
-      "Pulsera dorada con detalles exquisitos para ocasiones especiales. Elegancia y sofisticación en cada detalle.",
-    details: [
-      "Material: Oro laminado",
-      "Longitud: 19cm",
-      "Cierre: Seguro",
-      "Incluye: Estuche premium",
-    ],
-  },
-  {
-    id: 7,
-    name: "Pulsera Luna Plateada",
-    price: 14.99,
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80",
-    category: "lujo",
-    featured: true,
-    description:
-      "Inspirada en las fases lunares, esta pulsera plateada conecta con la energía femenina y los ciclos naturales.",
-    details: [
-      "Material: Plata 925",
-      "Longitud: 18cm",
-      "Cierre: Tipo mosquetón",
-      "Incluye: Limpiador de plata",
-    ],
-  },
-  {
-    id: 8,
-    name: "Pulsera Turquesa Natural",
-    price: 16.99,
-    rating: 4.9,
-    image:
-      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80",
-    category: "piedras",
-    featured: false,
-    description:
-      "Turquesa natural conocida por sus propiedades protectoras. Atrae la buena suerte y aleja las energías negativas.",
-    details: [
-      "Material: Turquesa natural",
-      "Longitud: 19cm",
       "Cierre: Ajustable",
-      "Incluye: Historia de la piedra",
-    ],
-  },
-  {
-    id: 9,
-    name: "Pulsera Corazón Brillante",
-    price: 11.99,
-    rating: 4.7,
-    image:
-      "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?auto=format&fit=crop&w=600&q=80",
-    category: "minimalista",
-    featured: true,
-    description:
-      "Delicada pulsera con charm en forma de corazón que simboliza el amor y la conexión emocional.",
-    details: [
-      "Material: Acero quirúrgico",
-      "Longitud: 17cm",
-      "Cierre: Tipo lobo",
-      "Hipoalergénica",
+      "Resistente al agua",
+      "Ideales para regalar a parejas o amigos",
     ],
   },
 ];
