@@ -11,7 +11,67 @@ import {
   FaPlus,
   FaMinus,
   FaTrash,
+  FaSignOutAlt,
+  FaEdit,
+  FaShoppingCart,
 } from "react-icons/fa";
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("GraciasenManoDB", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains("users")) {
+        const store = db.createObjectStore("users", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+        store.createIndex("email", "email", { unique: true });
+      }
+    };
+  });
+};
+
+const addUser = async (userData) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["users"], "readwrite");
+    const store = transaction.objectStore("users");
+    const request = store.add(userData);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const getUserByEmail = async (email) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["users"], "readonly");
+    const store = transaction.objectStore("users");
+    const index = store.index("email");
+    const request = index.get(email);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const getUserById = async (id) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["users"], "readonly");
+    const store = transaction.objectStore("users");
+    const request = store.get(id);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
 
 // Simulación de productos
 const productsData = [
@@ -20,103 +80,166 @@ const productsData = [
     name: "Pulsera Aurora",
     price: 12.99,
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5b6b1de?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1599643478518-a784e5b6b1de?auto=format&fit=crop&w=600&q=80",
     category: "energia",
     featured: true,
-    description: "Pulsera energética con cristales de cuarzo que capturan la esencia de la aurora boreal. Perfecta para momentos de meditación y conexión espiritual.",
-    details: ["Material: Cuarzo natural", "Longitud: 18cm", "Cierre: Dorado", "Incluye: Estuche de regalo"]
+    description:
+      "Pulsera energética con cristales de cuarzo que capturan la esencia de la aurora boreal. Perfecta para momentos de meditación y conexión espiritual.",
+    details: [
+      "Material: Cuarzo natural",
+      "Longitud: 18cm",
+      "Cierre: Dorado",
+      "Incluye: Estuche de regalo",
+    ],
   },
   {
     id: 2,
     name: "Pulsera de Cuarzo Rosa",
     price: 10.49,
     rating: 4.6,
-    image: "https://images.unsplash.com/photo-1612207421804-9e999a2e2b0a?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1612207421804-9e999a2e2b0a?auto=format&fit=crop&w=600&q=80",
     category: "cuarzo",
     featured: false,
-    description: "Elegante pulsera de cuarzo rosa que promueve el amor propio y las relaciones armoniosas. Ideal para regalar o autoregalarse.",
-    details: ["Material: Cuarzo rosa", "Longitud: 19cm", "Cierre: Plateado", "Incluye: Tarjeta energética"]
+    description:
+      "Elegante pulsera de cuarzo rosa que promueve el amor propio y las relaciones armoniosas. Ideal para regalar o autoregalarse.",
+    details: [
+      "Material: Cuarzo rosa",
+      "Longitud: 19cm",
+      "Cierre: Plateado",
+      "Incluye: Tarjeta energética",
+    ],
   },
   {
     id: 3,
     name: "Pulsera Energía Natural",
     price: 15.99,
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?auto=format&fit=crop&w=600&q=80",
     category: "energia",
     featured: true,
-    description: "Combinación única de piedras naturales que equilibran tus chakras y atraen energía positiva a tu vida diaria.",
-    details: ["Material: Piedras naturales", "Longitud: 20cm", "Cierre: Ajustable", "Incluye: Guía de piedras"]
+    description:
+      "Combinación única de piedras naturales que equilibran tus chakras y atraen energía positiva a tu vida diaria.",
+    details: [
+      "Material: Piedras naturales",
+      "Longitud: 20cm",
+      "Cierre: Ajustable",
+      "Incluye: Guía de piedras",
+    ],
   },
   {
     id: 4,
     name: "Pulsera Minimalista Negra",
     price: 9.99,
     rating: 4.5,
-    image: "https://images.unsplash.com/photo-1600180758600-22804b3dbcd0?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1600180758600-22804b3dbcd0?auto=format&fit=crop&w=600&q=80",
     category: "minimalista",
     featured: false,
-    description: "Diseño minimalista en color negro para el día a día. Elegancia discreta que complementa cualquier outfit.",
-    details: ["Material: Acero inoxidable", "Longitud: 17cm", "Cierre: Magnético", "Resistente al agua"]
+    description:
+      "Diseño minimalista en color negro para el día a día. Elegancia discreta que complementa cualquier outfit.",
+    details: [
+      "Material: Acero inoxidable",
+      "Longitud: 17cm",
+      "Cierre: Magnético",
+      "Resistente al agua",
+    ],
   },
   {
     id: 5,
     name: "Pulsera de Amatista",
     price: 13.99,
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1621263764111-ec5b3df8b2f3?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1621263764111-ec5b3df8b2f3?auto=format&fit=crop&w=600&q=80",
     category: "piedras",
     featured: true,
-    description: "Amatista pura que ayuda a calmar la mente y promover un sueño reparador. Piedra de la sabiduría y la paz interior.",
-    details: ["Material: Amatista natural", "Longitud: 18cm", "Cierre: Dorado", "Incluye: Certificado autenticidad"]
+    description:
+      "Amatista pura que ayuda a calmar la mente y promover un sueño reparador. Piedra de la sabiduría y la paz interior.",
+    details: [
+      "Material: Amatista natural",
+      "Longitud: 18cm",
+      "Cierre: Dorado",
+      "Incluye: Certificado autenticidad",
+    ],
   },
   {
     id: 6,
     name: "Pulsera Dorada de Lujo",
     price: 19.99,
     rating: 5.0,
-    image: "https://images.unsplash.com/photo-1621263764282-4db8338c9a31?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1621263764282-4db8338c9a31?auto=format&fit=crop&w=600&q=80",
     category: "lujo",
     featured: false,
-    description: "Pulsera dorada con detalles exquisitos para ocasiones especiales. Elegancia y sofisticación en cada detalle.",
-    details: ["Material: Oro laminado", "Longitud: 19cm", "Cierre: Seguro", "Incluye: Estuche premium"]
+    description:
+      "Pulsera dorada con detalles exquisitos para ocasiones especiales. Elegancia y sofisticación en cada detalle.",
+    details: [
+      "Material: Oro laminado",
+      "Longitud: 19cm",
+      "Cierre: Seguro",
+      "Incluye: Estuche premium",
+    ],
   },
   {
     id: 7,
     name: "Pulsera Luna Plateada",
     price: 14.99,
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80",
     category: "lujo",
     featured: true,
-    description: "Inspirada en las fases lunares, esta pulsera plateada conecta con la energía femenina y los ciclos naturales.",
-    details: ["Material: Plata 925", "Longitud: 18cm", "Cierre: Tipo mosquetón", "Incluye: Limpiador de plata"]
+    description:
+      "Inspirada en las fases lunares, esta pulsera plateada conecta con la energía femenina y los ciclos naturales.",
+    details: [
+      "Material: Plata 925",
+      "Longitud: 18cm",
+      "Cierre: Tipo mosquetón",
+      "Incluye: Limpiador de plata",
+    ],
   },
   {
     id: 8,
     name: "Pulsera Turquesa Natural",
     price: 16.99,
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80",
     category: "piedras",
     featured: false,
-    description: "Turquesa natural conocida por sus propiedades protectoras. Atrae la buena suerte y aleja las energías negativas.",
-    details: ["Material: Turquesa natural", "Longitud: 19cm", "Cierre: Ajustable", "Incluye: Historia de la piedra"]
+    description:
+      "Turquesa natural conocida por sus propiedades protectoras. Atrae la buena suerte y aleja las energías negativas.",
+    details: [
+      "Material: Turquesa natural",
+      "Longitud: 19cm",
+      "Cierre: Ajustable",
+      "Incluye: Historia de la piedra",
+    ],
   },
   {
     id: 9,
     name: "Pulsera Corazón Brillante",
     price: 11.99,
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?auto=format&fit=crop&w=600&q=80",
+    image:
+      "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?auto=format&fit=crop&w=600&q=80",
     category: "minimalista",
     featured: true,
-    description: "Delicada pulsera con charm en forma de corazón que simboliza el amor y la conexión emocional.",
-    details: ["Material: Acero quirúrgico", "Longitud: 17cm", "Cierre: Tipo lobo", "Hipoalergénica"]
+    description:
+      "Delicada pulsera con charm en forma de corazón que simboliza el amor y la conexión emocional.",
+    details: [
+      "Material: Acero quirúrgico",
+      "Longitud: 17cm",
+      "Cierre: Tipo lobo",
+      "Hipoalergénica",
+    ],
   },
 ];
 
-export default function HomePage() {
+export default function HomePage({ onLogout }) {
   const [visibleCount, setVisibleCount] = useState(6);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -127,6 +250,8 @@ export default function HomePage() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   // Categorías disponibles
   const categories = [
@@ -138,14 +263,37 @@ export default function HomePage() {
     { id: "lujo", name: "Lujo", icon: "🌟" },
   ];
 
-  // Cargar favoritos desde localStorage al iniciar
+  // Cargar usuario actual al iniciar
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('graciasenmano-favorites');
+    const loadCurrentUser = async () => {
+      try {
+        const savedUser = localStorage.getItem("graciasenmano-user");
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          setCurrentUser(userData);
+
+          // También podemos cargar datos adicionales desde IndexedDB si es necesario
+          const dbUser = await getUserById(userData.id);
+          if (dbUser) {
+            setCurrentUser(dbUser);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+      }
+    };
+
+    loadCurrentUser();
+  }, []);
+
+  // Cargar favoritos y carrito desde localStorage al iniciar
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("graciasenmano-favorites");
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites));
     }
 
-    const savedCart = localStorage.getItem('graciasenmano-cart');
+    const savedCart = localStorage.getItem("graciasenmano-cart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
@@ -153,12 +301,12 @@ export default function HomePage() {
 
   // Guardar favoritos en localStorage cuando cambien
   useEffect(() => {
-    localStorage.setItem('graciasenmano-favorites', JSON.stringify(favorites));
+    localStorage.setItem("graciasenmano-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
   // Guardar carrito en localStorage cuando cambie
   useEffect(() => {
-    localStorage.setItem('graciasenmano-cart', JSON.stringify(cart));
+    localStorage.setItem("graciasenmano-cart", JSON.stringify(cart));
   }, [cart]);
 
   // Filtrado de productos
@@ -167,7 +315,7 @@ export default function HomePage() {
 
     // Filtro por favoritos si está activo
     if (showFavorites) {
-      filtered = filtered.filter(product => favorites.includes(product.id));
+      filtered = filtered.filter((product) => favorites.includes(product.id));
     }
 
     // Filtro por búsqueda
@@ -203,13 +351,15 @@ export default function HomePage() {
 
   const addToCart = (product, e) => {
     if (e) e.stopPropagation();
-    const existingItem = cart.find(item => item.id === product.id);
+    const existingItem = cart.find((item) => item.id === product.id);
     if (existingItem) {
-      setCart(cart.map(item => 
-        item.id === product.id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
+      setCart(
+        cart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
     } else {
       setCart([...cart, { ...product, quantity: 1 }]);
     }
@@ -217,7 +367,7 @@ export default function HomePage() {
 
   const removeFromCart = (productId, e) => {
     if (e) e.stopPropagation();
-    setCart(cart.filter(item => item.id !== productId));
+    setCart(cart.filter((item) => item.id !== productId));
   };
 
   const updateQuantity = (productId, newQuantity) => {
@@ -225,11 +375,11 @@ export default function HomePage() {
       removeFromCart(productId);
       return;
     }
-    setCart(cart.map(item => 
-      item.id === productId 
-        ? { ...item, quantity: newQuantity }
-        : item
-    ));
+    setCart(
+      cart.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
   };
 
   const openProductModal = (product) => {
@@ -247,8 +397,31 @@ export default function HomePage() {
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+    return cart
+      .reduce((total, item) => total + item.price * item.quantity, 0)
+      .toFixed(2);
   };
+
+  const getFirstName = (fullName) => {
+    return fullName ? fullName.split(" ")[0] : "";
+  };
+
+  const getInitial = (fullName) => {
+    return fullName ? fullName.charAt(0).toUpperCase() : "U";
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("graciasenmano-token");
+    localStorage.removeItem("graciasenmano-user");
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
+  // Obtener productos favoritos
+  const favoriteProducts = productsData.filter((product) =>
+    favorites.includes(product.id)
+  );
 
   // Detectar scroll al final para cargar más productos
   useEffect(() => {
@@ -289,7 +462,7 @@ export default function HomePage() {
       {/* HEADER CON BARRA DE BÚSQUEDA */}
       <header className="bg-gradient-to-r from-purple-900/90 to-blue-900/90 backdrop-blur-lg shadow-2xl sticky top-0 z-40 border-b border-purple-500/30">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          {/* Logo y título */}
+          {/* Logo y título con saludo personalizado */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -298,19 +471,32 @@ export default function HomePage() {
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-full animate-pulse"></div>
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent tracking-wide">
-                GraciasenMano ✨
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent tracking-wide">
+                  GraciasenMano ✨
+                </h1>
+                {currentUser && (
+                  <p className="text-sm text-gray-300 mt-1">
+                    ¡Hola,{" "}
+                    <span className="text-pink-400 font-semibold">
+                      {getFirstName(currentUser.name)}
+                    </span>
+                    ! 👋
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => setShowFavorites(!showFavorites)}
                 className="relative group"
               >
                 <FaHeart
                   className={`text-xl cursor-pointer transition-all duration-300 ${
-                    favorites.length > 0 || showFavorites ? "text-pink-500" : "text-gray-300"
+                    favorites.length > 0 || showFavorites
+                      ? "text-pink-500"
+                      : "text-gray-300"
                   } group-hover:text-pink-500 group-hover:scale-110`}
                 />
                 {favorites.length > 0 && (
@@ -323,7 +509,7 @@ export default function HomePage() {
                 </div>
               </button>
 
-              <button 
+              <button
                 onClick={() => setShowCartModal(true)}
                 className="relative group"
               >
@@ -379,20 +565,27 @@ export default function HomePage() {
 
       {/* CONTENIDO PRINCIPAL - PRODUCTOS */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Encabezado de productos */}
+        {/* Encabezado de productos personalizado */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">
-            {showFavorites ? "Tus " : "Nuestras "}
+            {showFavorites
+              ? "Tus "
+              : currentUser
+              ? `Para ti, ${getFirstName(currentUser.name)} `
+              : "Nuestras "}
             <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
               {showFavorites ? "Favoritos" : "Pulseras Mágicas"}
             </span>{" "}
             ✨
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-            {showFavorites 
-              ? "Tus pulseras favoritas guardadas con amor" 
-              : "Descubre pulseras únicas que combinan estilo, energía positiva y artesanía excepcional"
-            }
+            {showFavorites
+              ? "Tus pulseras favoritas guardadas con amor"
+              : currentUser
+              ? `Descubre pulseras únicas que combinan con tu energía, ${getFirstName(
+                  currentUser.name
+                )}`
+              : "Descubre pulseras únicas que combinan estilo, energía positiva y artesanía excepcional"}
           </p>
 
           {/* Contadores de resultados */}
@@ -409,6 +602,22 @@ export default function HomePage() {
               </span>{" "}
               favoritos
             </div>
+            {currentUser && (
+              <div className="bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-2xl border border-purple-500/30">
+                <span className="text-blue-400 font-semibold">
+                  {new Date().getHours() < 12
+                    ? "☀️"
+                    : new Date().getHours() < 18
+                    ? "🌤️"
+                    : "🌙"}
+                </span>{" "}
+                {new Date().getHours() < 12
+                  ? "Buenos días"
+                  : new Date().getHours() < 18
+                  ? "Buenas tardes"
+                  : "Buenas noches"}
+              </div>
+            )}
           </div>
         </div>
 
@@ -487,7 +696,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     addToCart(product);
@@ -508,35 +717,36 @@ export default function HomePage() {
         {/* Mensaje cuando no hay resultados */}
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">
-              {showFavorites ? "💔" : "😔"}
-            </div>
+            <div className="text-6xl mb-4">{showFavorites ? "💔" : "😔"}</div>
             <h3 className="text-2xl font-bold text-gray-300 mb-2">
-              {showFavorites ? "Aún no tienes favoritos" : "No se encontraron productos"}
+              {showFavorites
+                ? "Aún no tienes favoritos"
+                : "No se encontraron productos"}
             </h3>
             <p className="text-gray-400">
-              {showFavorites 
-                ? "Agrega productos a tus favoritos tocando el corazón" 
-                : "Intenta con otros términos de búsqueda o categorías"
-              }
+              {showFavorites
+                ? "Agrega productos a tus favoritos tocando el corazón"
+                : "Intenta con otros términos de búsqueda o categorías"}
             </p>
           </div>
         )}
 
         {/* Botón de carga más */}
-        {visibleCount < productsData.length && filteredProducts.length > 0 && !showFavorites && (
-          <div className="flex justify-center">
-            <button
-              onClick={loadMore}
-              className="group bg-gradient-to-r from-gray-800/70 to-purple-900/50 backdrop-blur-sm hover:from-gray-700/70 hover:to-purple-800/50 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 border border-purple-500/30 hover:border-purple-400 flex items-center gap-2 hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              Cargar más productos
-              <span className="group-hover:translate-y-1 transition-transform">
-                ⬇️
-              </span>
-            </button>
-          </div>
-        )}
+        {visibleCount < productsData.length &&
+          filteredProducts.length > 0 &&
+          !showFavorites && (
+            <div className="flex justify-center">
+              <button
+                onClick={loadMore}
+                className="group bg-gradient-to-r from-gray-800/70 to-purple-900/50 backdrop-blur-sm hover:from-gray-700/70 hover:to-purple-800/50 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 border border-purple-500/30 hover:border-purple-400 flex items-center gap-2 hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                Cargar más productos
+                <span className="group-hover:translate-y-1 transition-transform">
+                  ⬇️
+                </span>
+              </button>
+            </div>
+          )}
       </main>
 
       {/* MODAL DEL CARRITO */}
@@ -561,13 +771,20 @@ export default function HomePage() {
               {cart.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">🛒</div>
-                  <h4 className="text-xl font-semibold text-gray-300 mb-2">Tu carrito está vacío</h4>
-                  <p className="text-gray-400">Agrega algunos productos mágicos</p>
+                  <h4 className="text-xl font-semibold text-gray-300 mb-2">
+                    Tu carrito está vacío
+                  </h4>
+                  <p className="text-gray-400">
+                    Agrega algunos productos mágicos
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {cart.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-2xl border border-purple-500/20">
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-2xl border border-purple-500/20"
+                    >
                       <img
                         src={item.image}
                         alt={item.name}
@@ -575,18 +792,26 @@ export default function HomePage() {
                       />
                       <div className="flex-grow">
                         <h4 className="font-semibold">{item.name}</h4>
-                        <p className="text-purple-400 font-bold">${item.price}</p>
+                        <p className="text-purple-400 font-bold">
+                          ${item.price}
+                        </p>
                       </div>
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
                           className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
                         >
                           <FaMinus className="text-xs" />
                         </button>
-                        <span className="font-semibold w-8 text-center">{item.quantity}</span>
+                        <span className="font-semibold w-8 text-center">
+                          {item.quantity}
+                        </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
                           className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
                         >
                           <FaPlus className="text-xs" />
@@ -609,13 +834,180 @@ export default function HomePage() {
               <div className="p-6 border-t border-purple-500/30">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-lg font-semibold">Total:</span>
-                  <span className="text-2xl font-bold text-purple-400">${getCartTotal()}</span>
+                  <span className="text-2xl font-bold text-purple-400">
+                    ${getCartTotal()}
+                  </span>
                 </div>
                 <button className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
                   Proceder al Pago
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE CUENTA DEL USUARIO */}
+      {showAccountModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="min-h-screen">
+            {/* Header fijo */}
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-900/95 to-blue-900/95 backdrop-blur-lg border-b border-purple-500/30 p-4">
+              <div className="max-w-4xl mx-auto flex items-center justify-between">
+                <button
+                  onClick={() => setShowAccountModal(false)}
+                  className="flex items-center gap-2 text-white hover:text-pink-400 transition-colors duration-200"
+                >
+                  <FaArrowLeft className="text-xl" />
+                  <span>Volver</span>
+                </button>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  Mi Cuenta
+                </h2>
+                <div className="w-8"></div> {/* Espaciador para centrar */}
+              </div>
+            </div>
+
+            {/* Contenido del modal */}
+            <div className="max-w-4xl mx-auto p-4">
+              {/* Información del usuario */}
+              <div className="bg-gradient-to-br from-gray-900/80 to-purple-900/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-purple-500/20 mb-6">
+                <div className="p-8 text-center">
+                  {/* Avatar con inicial */}
+                  <div className="flex justify-center mb-6">
+                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center shadow-2xl text-white text-4xl font-bold">
+                      {currentUser ? getInitial(currentUser.name) : "U"}
+                    </div>
+                  </div>
+
+                  <h1 className="text-3xl font-bold text-white mb-2">
+                    {currentUser ? currentUser.name : "Usuario"}
+                  </h1>
+                  <p className="text-gray-300 text-lg mb-4">
+                    {currentUser ? currentUser.email : "email@ejemplo.com"}
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <div className="bg-gray-800/50 px-4 py-2 rounded-2xl border border-purple-500/30">
+                      <span className="text-pink-400 font-semibold">
+                        {favorites.length}
+                      </span>{" "}
+                      Favoritos
+                    </div>
+                    <div className="bg-gray-800/50 px-4 py-2 rounded-2xl border border-purple-500/30">
+                      <span className="text-green-400 font-semibold">
+                        {getTotalCartItems()}
+                      </span>{" "}
+                      En carrito
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sección de Favoritos */}
+              <div className="bg-gradient-to-br from-gray-900/80 to-purple-900/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-purple-500/20">
+                <div className="p-6 border-b border-purple-500/20">
+                  <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                    <FaHeart className="text-pink-500" />
+                    Tus Productos Favoritos
+                  </h3>
+                  <p className="text-gray-300">
+                    {favoriteProducts.length === 0
+                      ? "Aún no tienes productos favoritos"
+                      : `Tienes ${favoriteProducts.length} productos en tus favoritos`}
+                  </p>
+                </div>
+
+                <div className="p-6">
+                  {favoriteProducts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">💔</div>
+                      <h4 className="text-xl font-semibold text-gray-300 mb-2">
+                        No tienes favoritos
+                      </h4>
+                      <p className="text-gray-400 mb-6">
+                        Agrega productos a tus favoritos tocando el corazón
+                      </p>
+                      <button
+                        onClick={() => setShowAccountModal(false)}
+                        className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                      >
+                        Explorar Productos
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {favoriteProducts.map((product) => (
+                        <div
+                          key={product.id}
+                          className="bg-gray-800/50 rounded-2xl p-4 border border-purple-500/20 hover:border-purple-400/50 transition-all duration-300 cursor-pointer"
+                          onClick={() => {
+                            setShowAccountModal(false);
+                            openProductModal(product);
+                          }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-16 h-16 rounded-xl object-cover"
+                            />
+                            <div className="flex-grow">
+                              <h4 className="font-semibold text-white">
+                                {product.name}
+                              </h4>
+                              <p className="text-purple-400 font-bold">
+                                ${product.price}
+                              </p>
+                              <div className="flex items-center text-yellow-400 text-sm">
+                                <FaStar className="fill-current" />
+                                <span className="text-gray-400 ml-1">
+                                  ({product.rating})
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(product.id);
+                              }}
+                              className="w-10 h-10 bg-pink-500/20 rounded-full flex items-center justify-center text-pink-500 hover:bg-pink-500/30 transition-colors"
+                            >
+                              <FaHeart className="fill-current" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Acciones de cuenta */}
+              <div className="mt-6 bg-gradient-to-br from-gray-900/80 to-purple-900/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-purple-500/20">
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">
+                    Acciones de Cuenta
+                  </h3>
+                  <div className="space-y-3">
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 p-4 bg-red-500/20 rounded-2xl border border-red-500/30 hover:border-red-400/50 transition-all duration-300 text-left"
+                    >
+                      <FaSignOutAlt className="text-red-400" />
+                      <div>
+                        <p className="font-semibold text-white">
+                          Cerrar Sesión
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          Salir de tu cuenta
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -661,7 +1053,9 @@ export default function HomePage() {
                   >
                     <FaHeart
                       className={
-                        favorites.includes(selectedProduct.id) ? "fill-current text-lg" : "text-lg"
+                        favorites.includes(selectedProduct.id)
+                          ? "fill-current text-lg"
+                          : "text-lg"
                       }
                     />
                   </button>
@@ -670,8 +1064,12 @@ export default function HomePage() {
                 {/* Información del producto */}
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <h1 className="text-3xl font-bold">{selectedProduct.name}</h1>
-                    <p className="text-2xl font-bold text-purple-400">${selectedProduct.price}</p>
+                    <h1 className="text-3xl font-bold">
+                      {selectedProduct.name}
+                    </h1>
+                    <p className="text-2xl font-bold text-purple-400">
+                      ${selectedProduct.price}
+                    </p>
                   </div>
 
                   <div className="flex items-center text-yellow-400 mb-6">
@@ -692,14 +1090,19 @@ export default function HomePage() {
 
                   <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-3">Descripción</h3>
-                    <p className="text-gray-300 leading-relaxed">{selectedProduct.description}</p>
+                    <p className="text-gray-300 leading-relaxed">
+                      {selectedProduct.description}
+                    </p>
                   </div>
 
                   <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-3">Detalles</h3>
                     <ul className="space-y-2">
                       {selectedProduct.details.map((detail, index) => (
-                        <li key={index} className="flex items-center gap-2 text-gray-300">
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 text-gray-300"
+                        >
                           <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                           {detail}
                         </li>
@@ -707,7 +1110,7 @@ export default function HomePage() {
                     </ul>
                   </div>
 
-                  <button 
+                  <button
                     onClick={() => addToCart(selectedProduct)}
                     className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
                   >
@@ -739,7 +1142,7 @@ export default function HomePage() {
               <span className="text-xs font-medium">Buscar</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setShowCartModal(true)}
               className="flex flex-col items-center gap-1 text-white transition-all duration-300 hover:text-green-400 hover:scale-110 relative"
             >
@@ -754,7 +1157,10 @@ export default function HomePage() {
               )}
             </button>
 
-            <button className="flex flex-col items-center gap-1 text-white transition-all duration-300 hover:text-yellow-400 hover:scale-110">
+            <button
+              onClick={() => setShowAccountModal(true)}
+              className="flex flex-col items-center gap-1 text-white transition-all duration-300 hover:text-yellow-400 hover:scale-110"
+            >
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-600 flex items-center justify-center shadow-lg">
                 <FaUser className="text-lg" />
               </div>
