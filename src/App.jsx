@@ -1,10 +1,10 @@
 import React from 'react'
-import CatalogoPulseras from './Categorias'
+import WorkingPage from './Categorias'
 
 const App = () => {
   return (
-    <div>
-      <CatalogoPulseras />
+    <div className='w-full h-full'>
+      <WorkingPage />
     </div>
   )
 }
